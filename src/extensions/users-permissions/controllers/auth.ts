@@ -1,0 +1,141 @@
+import type { Core } from '@strapi/strapi';
+import utils from '@strapi/utils';
+
+const { ApplicationError, ForbiddenError } = utils.errors;
+
+type RoleShape = {
+  id: number;
+  name: string;
+  type: string;
+};
+
+type UserShape = {
+  id: number;
+  email: string;
+  username: string;
+  userType?: string;
+  role?: RoleShape | null;
+  [key: string]: unknown;
+};
+
+const toRolePayload = (role: RoleShape) => ({
+  id: role.id,
+  name: role.name,
+  type: role.type,
+});
+
+const sanitizeUser = async (strapi: Core.Strapi, user: unknown, ctx: any) => {
+  const { auth } = ctx.state;
+  const userSchema = strapi.getModel('plugin::users-permissions.user');
+
+  return strapi.contentAPI.sanitize.output(user, userSchema, { auth });
+};
+
+type AuthControllerFactoryArgs = {
+  strapi: Core.Strapi;
+  defaultRegister: (ctx: any) => Promise<void>;
+};
+
+const authControllerFactory = ({ strapi, defaultRegister }: AuthControllerFactoryArgs) => ({
+
+  async register(ctx: any) {
+    const body = ctx.request.body || {};
+    const userType = typeof body.userType === 'string' ? body.userType.trim() : '';
+
+    if (!userType || userType === 'admin') {
+      throw new ForbiddenError('Invalid userType');
+    }
+
+    if (!['visitor', 'college-member'].includes(userType)) {
+      throw new ForbiddenError('Invalid userType');
+    }
+
+    const universityId =
+      typeof body.universityId === 'string' ? body.universityId.trim() : body.universityId;
+
+    if (userType === 'college-member' && !universityId) {
+      return ctx.badRequest('universityId is required for college-member users');
+    }
+
+    let defaultResponse: any;
+    const originalSend = ctx.send.bind(ctx);
+    ctx.send = (payload: unknown) => {
+      defaultResponse = payload;
+      return payload;
+    };
+
+    await defaultRegister(ctx);
+    ctx.send = originalSend;
+
+    const createdUserId = defaultResponse?.user?.id;
+
+    if (!createdUserId) {
+      throw new ApplicationError('Unable to identify registered user');
+    }
+
+    const role = await strapi.db.query('plugin::users-permissions.role').findOne({
+      where: { type: userType },
+    });
+
+    if (!role) {
+      throw new ApplicationError(`Role not found for userType: ${userType}`);
+    }
+
+    await strapi.db.query('plugin::users-permissions.user').update({
+      where: { id: createdUserId },
+      data: {
+        role: role.id,
+        userType,
+        universityId: userType === 'college-member' ? universityId : null,
+      },
+    });
+
+    const userWithRole = (await strapi.db.query('plugin::users-permissions.user').findOne({
+      where: { id: createdUserId },
+      populate: ['role', 'avatar'],
+    })) as UserShape;
+
+    if (!userWithRole) {
+      throw new ApplicationError('Unable to load registered user');
+    }
+
+    const sanitizedUser = await sanitizeUser(strapi, userWithRole, ctx);
+    const jwt = await strapi.plugin('users-permissions').service('jwt').issue({ id: userWithRole.id });
+    return ctx.send({ jwt, user: sanitizedUser });
+  },
+
+  async me(ctx: any) {
+    const authUser = ctx.state.user;
+
+    if (!authUser) {
+      return ctx.unauthorized();
+    }
+
+    const user = (await strapi.db.query('plugin::users-permissions.user').findOne({
+      where: { id: authUser.id },
+      populate: ['role', 'avatar'],
+    })) as UserShape | null;
+
+    if (!user) {
+      return ctx.notFound('User not found');
+    }
+
+    const {
+      password,
+      resetPasswordToken,
+      confirmationToken,
+      ...safeUser
+    } = user as Record<string, unknown>;
+
+    void password;
+    void resetPasswordToken;
+    void confirmationToken;
+
+    ctx.body = {
+      ...safeUser,
+      role: user.role ? toRolePayload(user.role) : null,
+    };
+  },
+});
+
+export = authControllerFactory;
