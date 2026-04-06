@@ -697,6 +697,40 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiHeroSlideHeroSlide extends Struct.CollectionTypeSchema {
+  collectionName: 'hero_slides';
+  info: {
+    description: 'Homepage hero slider images';
+    displayName: 'Hero Slide';
+    pluralName: 'hero-slides';
+    singularName: 'hero-slide';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    image: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
+    isActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::hero-slide.hero-slide'
+    > &
+      Schema.Attribute.Private;
+    order: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<0>;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiHomepageHomepage extends Struct.SingleTypeSchema {
   collectionName: 'homepages';
   info: {
@@ -1329,6 +1363,7 @@ declare module '@strapi/strapi' {
       'api::category.category': ApiCategoryCategory;
       'api::contact-us.contact-us': ApiContactUsContactUs;
       'api::global.global': ApiGlobalGlobal;
+      'api::hero-slide.hero-slide': ApiHeroSlideHeroSlide;
       'api::homepage.homepage': ApiHomepageHomepage;
       'api::questionnaires.questionnaires': ApiQuestionnairesQuestionnaires;
       'api::resources.resources': ApiResourcesResources;
