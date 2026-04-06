@@ -100,7 +100,12 @@ const authControllerFactory = ({ strapi, defaultRegister }: AuthControllerFactor
     }
 
     const sanitizedUser = await sanitizeUser(strapi, userWithRole, ctx);
-    const jwt = await strapi.plugin('users-permissions').service('jwt').issue({ id: userWithRole.id });
+    const jwt = strapi.plugin('users-permissions').service('jwt').issue({
+      id: userWithRole.id,
+      email: userWithRole.email,
+      userType: userWithRole.userType,
+      role: userWithRole.role ? toRolePayload(userWithRole.role) : null,
+    });
     return ctx.send({ jwt, user: sanitizedUser });
   },
 
