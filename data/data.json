@@ -27,6 +27,96 @@
       }
     ]
   },
+  "homepage": {
+    "title": "International Student Platform",
+    "subtitle": "Everything students need before, during, and after arrival",
+    "seo": {
+      "metaTitle": "Homepage | International Student Platform",
+      "metaDescription": "Central hub for academics, questionnaires, resources, announcements, and support.",
+      "shareImage": null
+    },
+    "blocks": [
+      {
+        "__component": "shared.rich-text",
+        "body": "## Welcome\n\nUse this page to introduce your platform, highlight key services, and direct students to the most important sections."
+      }
+    ]
+  },
+  "academics": {
+    "title": "Academics",
+    "subtitle": "Programs, curriculum, and academic policies",
+    "seo": {
+      "metaTitle": "Academics | International Student Platform",
+      "metaDescription": "Academic information for international students.",
+      "shareImage": null
+    },
+    "blocks": [
+      {
+        "__component": "shared.rich-text",
+        "body": "## Academic Information\n\nAdd details about programs, credits, registration steps, exam timelines, and tutoring services."
+      }
+    ]
+  },
+  "questionnaires": {
+    "title": "Questionnaires",
+    "subtitle": "Forms and surveys for students",
+    "seo": {
+      "metaTitle": "Questionnaires | International Student Platform",
+      "metaDescription": "All questionnaires and student feedback forms.",
+      "shareImage": null
+    },
+    "blocks": [
+      {
+        "__component": "shared.rich-text",
+        "body": "## Student Questionnaires\n\nManage onboarding forms, housing surveys, and feedback questionnaires from this page."
+      }
+    ]
+  },
+  "resources": {
+    "title": "Resources",
+    "subtitle": "Guides, downloads, and support links",
+    "seo": {
+      "metaTitle": "Resources | International Student Platform",
+      "metaDescription": "Helpful documents and resources for international students.",
+      "shareImage": null
+    },
+    "blocks": [
+      {
+        "__component": "shared.rich-text",
+        "body": "## Student Resources\n\nUse this page for visa guides, health insurance information, campus maps, and downloadable forms."
+      }
+    ]
+  },
+  "announcements": {
+    "title": "Announcements",
+    "subtitle": "Important updates and deadlines",
+    "seo": {
+      "metaTitle": "Announcements | International Student Platform",
+      "metaDescription": "Latest institutional updates for international students.",
+      "shareImage": null
+    },
+    "blocks": [
+      {
+        "__component": "shared.rich-text",
+        "body": "## Latest Announcements\n\nPublish urgent updates, policy changes, and important dates that students should not miss."
+      }
+    ]
+  },
+  "contactUs": {
+    "title": "Contact Us",
+    "subtitle": "Reach student services and support teams",
+    "seo": {
+      "metaTitle": "Contact Us | International Student Platform",
+      "metaDescription": "Contact details for international student support.",
+      "shareImage": null
+    },
+    "blocks": [
+      {
+        "__component": "shared.rich-text",
+        "body": "## Contact Information\n\nAdd office email, phone number, address, opening hours, and emergency contact instructions."
+      }
+    ]
+  },
   "categories": [
     {
       "name": "news",

@@ -3,7 +3,19 @@
 const fs = require('fs-extra');
 const path = require('path');
 const mime = require('mime-types');
-const { categories, authors, articles, global, about } = require('../data/data.json');
+const {
+  categories,
+  authors,
+  articles,
+  global,
+  about,
+  homepage,
+  academics,
+  questionnaires,
+  resources,
+  announcements,
+  contactUs,
+} = require('../data/data.json');
 
 async function seedExampleApp() {
   const shouldImportSeedData = await isFirstRun();
@@ -216,6 +228,78 @@ async function importAbout() {
   });
 }
 
+async function importHomepage() {
+  const updatedBlocks = await updateBlocks(homepage.blocks);
+
+  await createEntry({
+    model: 'homepage',
+    entry: {
+      ...homepage,
+      blocks: updatedBlocks,
+    },
+  });
+}
+
+async function importAcademics() {
+  const updatedBlocks = await updateBlocks(academics.blocks);
+
+  await createEntry({
+    model: 'academics',
+    entry: {
+      ...academics,
+      blocks: updatedBlocks,
+    },
+  });
+}
+
+async function importQuestionnaires() {
+  const updatedBlocks = await updateBlocks(questionnaires.blocks);
+
+  await createEntry({
+    model: 'questionnaires',
+    entry: {
+      ...questionnaires,
+      blocks: updatedBlocks,
+    },
+  });
+}
+
+async function importResources() {
+  const updatedBlocks = await updateBlocks(resources.blocks);
+
+  await createEntry({
+    model: 'resources',
+    entry: {
+      ...resources,
+      blocks: updatedBlocks,
+    },
+  });
+}
+
+async function importAnnouncements() {
+  const updatedBlocks = await updateBlocks(announcements.blocks);
+
+  await createEntry({
+    model: 'announcements',
+    entry: {
+      ...announcements,
+      blocks: updatedBlocks,
+    },
+  });
+}
+
+async function importContactUs() {
+  const updatedBlocks = await updateBlocks(contactUs.blocks);
+
+  await createEntry({
+    model: 'contact-us',
+    entry: {
+      ...contactUs,
+      blocks: updatedBlocks,
+    },
+  });
+}
+
 async function importCategories() {
   for (const category of categories) {
     await createEntry({ model: 'category', entry: category });
@@ -244,6 +328,12 @@ async function importSeedData() {
     author: ['find', 'findOne'],
     global: ['find', 'findOne'],
     about: ['find', 'findOne'],
+    homepage: ['find', 'findOne'],
+    academics: ['find', 'findOne'],
+    questionnaires: ['find', 'findOne'],
+    resources: ['find', 'findOne'],
+    announcements: ['find', 'findOne'],
+    'contact-us': ['find', 'findOne'],
   });
 
   // Create all entries
@@ -252,6 +342,12 @@ async function importSeedData() {
   await importArticles();
   await importGlobal();
   await importAbout();
+  await importHomepage();
+  await importAcademics();
+  await importQuestionnaires();
+  await importResources();
+  await importAnnouncements();
+  await importContactUs();
 }
 
 async function main() {
