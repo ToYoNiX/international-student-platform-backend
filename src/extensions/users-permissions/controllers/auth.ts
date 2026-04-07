@@ -31,12 +31,53 @@ const sanitizeUser = async (strapi: Core.Strapi, user: unknown, ctx: any) => {
   return strapi.contentAPI.sanitize.output(user, userSchema, { auth });
 };
 
+const withFrontendUserAliases = (user: Record<string, unknown>) => {
+  const name = (user.displayName as string | null | undefined) ||
+    (user.username as string | null | undefined) ||
+    null;
+  const collegeId = (user.universityId as string | null | undefined) || null;
+
+  return {
+    ...user,
+    displayName: name,
+    name,
+    universityId: collegeId,
+    collegeId,
+  };
+};
+
 type AuthControllerFactoryArgs = {
   strapi: Core.Strapi;
   defaultRegister: (ctx: any) => Promise<void>;
+  defaultCallback?: (ctx: any) => Promise<void>;
 };
 
-const authControllerFactory = ({ strapi, defaultRegister }: AuthControllerFactoryArgs) => ({
+const authControllerFactory = ({ strapi, defaultRegister, defaultCallback }: AuthControllerFactoryArgs) => ({
+
+  async callback(ctx: any) {
+    if (!defaultCallback) {
+      throw new ApplicationError('Default callback handler is unavailable');
+    }
+
+    let defaultResponse: any;
+    const originalSend = ctx.send.bind(ctx);
+    ctx.send = (payload: unknown) => {
+      defaultResponse = payload;
+      return payload;
+    };
+
+    await defaultCallback(ctx);
+    ctx.send = originalSend;
+
+    const userPayload = defaultResponse?.user
+      ? withFrontendUserAliases(defaultResponse.user as Record<string, unknown>)
+      : defaultResponse?.user;
+
+    return ctx.send({
+      ...defaultResponse,
+      user: userPayload,
+    });
+  },
 
   async register(ctx: any) {
     const body = ctx.request.body || {};
@@ -100,13 +141,14 @@ const authControllerFactory = ({ strapi, defaultRegister }: AuthControllerFactor
     }
 
     const sanitizedUser = await sanitizeUser(strapi, userWithRole, ctx);
+    const userPayload = withFrontendUserAliases(sanitizedUser as Record<string, unknown>);
     const jwt = strapi.plugin('users-permissions').service('jwt').issue({
       id: userWithRole.id,
       email: userWithRole.email,
       userType: userWithRole.userType,
       role: userWithRole.role ? toRolePayload(userWithRole.role) : null,
     });
-    return ctx.send({ jwt, user: sanitizedUser });
+    return ctx.send({ jwt, user: userPayload });
   },
 
   async me(ctx: any) {
@@ -136,10 +178,10 @@ const authControllerFactory = ({ strapi, defaultRegister }: AuthControllerFactor
     void resetPasswordToken;
     void confirmationToken;
 
-    ctx.body = {
+    ctx.body = withFrontendUserAliases({
       ...safeUser,
       role: user.role ? toRolePayload(user.role) : null,
-    };
+    });
   },
 });
 

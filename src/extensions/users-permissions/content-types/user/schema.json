@@ -10,6 +10,11 @@
   "options": {
     "timestamps": true
   },
+  "pluginOptions": {
+    "content-type-builder": {
+      "visible": false
+    }
+  },
   "attributes": {
     "username": {
       "type": "string",

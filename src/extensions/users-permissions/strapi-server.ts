@@ -40,10 +40,12 @@ export default (plugin: UsersPermissionsPlugin) => {
     const custom = authControllerFactory({
       strapi,
       defaultRegister: original.register.bind(original),
+      defaultCallback: original.callback.bind(original),
     });
 
     return {
       ...original,
+      callback: custom.callback.bind(custom),
       register: custom.register.bind(custom),
     };
   };

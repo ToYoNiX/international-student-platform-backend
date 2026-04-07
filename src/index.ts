@@ -87,6 +87,41 @@ const setRolePermissions = async (
   );
 };
 
+const NAV_ITEMS_SEED = [
+  { label: 'Home', url: '/', order: 1 },
+  { label: 'Academics', url: '/academics', order: 2 },
+  { label: 'Questionnaires', url: '/questionnaires', order: 3 },
+  { label: 'Resources', url: '/resources', order: 4 },
+  { label: 'Announcements', url: '/announcements', order: 5 },
+  { label: 'Contact Us', url: '/contact-us', order: 6 },
+];
+
+const seedNavItems = async (strapi: Core.Strapi) => {
+  const query = strapi.db.query('api::nav-item.nav-item');
+
+  for (const item of NAV_ITEMS_SEED) {
+    const existing = await query.findOne({
+      where: {
+        $or: [{ label: item.label }, { url: item.url }],
+      },
+    });
+
+    if (existing) {
+      continue;
+    }
+
+    await query.create({
+      data: {
+        label: item.label,
+        url: item.url,
+        order: item.order,
+        visible: true,
+        publishedAt: new Date().toISOString(),
+      },
+    });
+  }
+};
+
 export default {
   /**
    * An asynchronous register function that runs before
@@ -105,6 +140,8 @@ export default {
    */
   async bootstrap({ strapi }: { strapi: Core.Strapi }) {
     const frontendUrl = strapi.config.get('server.frontendUrl', process.env.FRONTEND_URL);
+
+    await seedNavItems(strapi);
 
     // Keep permissions list aligned with current routes/actions before assigning role permissions.
     await strapi.plugin('users-permissions').service('users-permissions').syncPermissions();
