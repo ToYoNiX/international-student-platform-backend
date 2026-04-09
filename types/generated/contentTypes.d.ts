@@ -610,43 +610,6 @@ export interface ApiHomepageHomepage extends Struct.SingleTypeSchema {
   };
 }
 
-export interface ApiNavItemNavItem extends Struct.CollectionTypeSchema {
-  collectionName: 'nav_items';
-  info: {
-    description: 'Navigation links for frontend menus';
-    displayName: 'Nav Item';
-    pluralName: 'nav-items';
-    singularName: 'nav-item';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  pluginOptions: {
-    'content-type-builder': {
-      visible: false;
-    };
-  };
-  attributes: {
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    label: Schema.Attribute.String & Schema.Attribute.Required;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::nav-item.nav-item'
-    > &
-      Schema.Attribute.Private;
-    order: Schema.Attribute.Integer & Schema.Attribute.Required;
-    publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    url: Schema.Attribute.String & Schema.Attribute.Required;
-    visible: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
-  };
-}
-
 export interface ApiQuestionnairesQuestionnaires
   extends Struct.SingleTypeSchema {
   collectionName: 'questionnaires_pages';
@@ -953,6 +916,57 @@ export interface PluginReviewWorkflowsWorkflowStage
   };
 }
 
+export interface PluginTreeMenusMenu extends Struct.CollectionTypeSchema {
+  collectionName: 'menus';
+  info: {
+    description: '';
+    displayName: 'Menu';
+    name: 'Menu';
+    pluralName: 'menus';
+    singularName: 'menu';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  pluginOptions: {
+    'content-manager': {
+      visible: true;
+    };
+    'content-type-builder': {
+      visible: true;
+    };
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    items: Schema.Attribute.JSON &
+      Schema.Attribute.Required &
+      Schema.Attribute.CustomField<
+        'plugin::tree-menus.tree',
+        {
+          schemas: '{\n  "attributes": [\n    {\n      "id": "title",\n      "label": "Title",\n      "placeholder": "Enter item title",\n      "type": "text",\n      "validationType": "string",\n      "required": true,\n      "validations": [\n        {\n          "type": "required",\n          "params": [\n            "Title is required"\n          ]\n        },\n        {\n          "type": "max",\n          "params": [\n            100,\n            "Title cannot exceed 100 characters"\n          ]\n        },\n        {\n          "type": "default",\n          "params": [\n            "New Item"\n          ]\n        }\n      ]\n    },\n    {\n      "id": "url",\n      "label": "URL",\n      "placeholder": "Enter URL (e.g. /about)",\n      "type": "text",\n      "validationType": "string",\n      "required": true,\n      "validations": [\n        {\n          "type": "required",\n          "params": [\n            "URL is required"\n          ]\n        },\n        {\n          "type": "max",\n          "params": [\n            200,\n            "URL cannot exceed 200 characters"\n          ]\n        },\n        {\n          "type": "default",\n          "params": [\n            "/"\n          ]\n        }\n      ]\n    },\n    {\n      "id": "target",\n      "label": "Link Target",\n      "type": "select",\n      "validationType": "mixed",\n      "value": "_self",\n      "required": false,\n      "validations": [\n        {\n          "type": "oneOf",\n          "params": [\n            [\n              "_blank",\n              "_self"\n            ],\n            "Must be _blank or _self"\n          ]\n        },\n        {\n          "type": "default",\n          "params": [\n            "_self"\n          ]\n        }\n      ],\n      "options": [\n        {\n          "key": "_self",\n          "value": "_self",\n          "metadatas": {\n            "intlLabel": {\n              "id": "tree-menus.target.options._self",\n              "defaultMessage": "Same window (_self)"\n            },\n            "disabled": false,\n            "hidden": false\n          }\n        },\n        {\n          "key": "_blank",\n          "value": "_blank",\n          "metadatas": {\n            "intlLabel": {\n              "id": "tree-menus.target.options._blank",\n              "defaultMessage": "New window (_blank)"\n            },\n            "disabled": false,\n            "hidden": false\n          }\n        }\n      ]\n    },\n    {\n      "id": "isProtected",\n      "label": "Protected (requires login)",\n      "type": "bool",\n      "validationType": "boolean",\n      "value": false,\n      "required": false,\n      "validations": [\n        {\n          "type": "default",\n          "params": [\n            false\n          ]\n        }\n      ]\n    }\n  ]\n}';
+        }
+      >;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'plugin::tree-menus.menu'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
+    title: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 100;
+      }>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface PluginUploadFile extends Struct.CollectionTypeSchema {
   collectionName: 'files';
   info: {
@@ -1247,7 +1261,6 @@ declare module '@strapi/strapi' {
       'api::contact-us.contact-us': ApiContactUsContactUs;
       'api::hero-slide.hero-slide': ApiHeroSlideHeroSlide;
       'api::homepage.homepage': ApiHomepageHomepage;
-      'api::nav-item.nav-item': ApiNavItemNavItem;
       'api::questionnaires.questionnaires': ApiQuestionnairesQuestionnaires;
       'api::resources.resources': ApiResourcesResources;
       'plugin::content-releases.release': PluginContentReleasesRelease;
@@ -1255,6 +1268,7 @@ declare module '@strapi/strapi' {
       'plugin::i18n.locale': PluginI18NLocale;
       'plugin::review-workflows.workflow': PluginReviewWorkflowsWorkflow;
       'plugin::review-workflows.workflow-stage': PluginReviewWorkflowsWorkflowStage;
+      'plugin::tree-menus.menu': PluginTreeMenusMenu;
       'plugin::upload.file': PluginUploadFile;
       'plugin::upload.folder': PluginUploadFolder;
       'plugin::users-permissions.permission': PluginUsersPermissionsPermission;

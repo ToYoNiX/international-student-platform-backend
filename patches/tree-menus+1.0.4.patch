@@ -1,0 +1,142 @@
+diff --git a/node_modules/tree-menus/dist/_chunks/App-BVrPOSoT.js b/node_modules/tree-menus/dist/_chunks/App-BVrPOSoT.js
+index ea68851..350d07f 100644
+--- a/node_modules/tree-menus/dist/_chunks/App-BVrPOSoT.js
++++ b/node_modules/tree-menus/dist/_chunks/App-BVrPOSoT.js
+@@ -8,7 +8,7 @@ const icons = require("@strapi/icons");
+ const reactIntl = require("react-intl");
+ const index = require("./index-Dv_Sc7Pk.js");
+ const UID_MENU = "plugin::tree-menus.menu";
+-const Action = ({ children, onClick, size, variant }) => /* @__PURE__ */ jsxRuntime.jsx(designSystem.Button, { onClick, startIcon: /* @__PURE__ */ jsxRuntime.jsx(icons.Plus, {}), variant, size, children });
++const Action = ({ children, onClick, size = "S", variant }) => /* @__PURE__ */ jsxRuntime.jsx(designSystem.Button, { onClick, startIcon: /* @__PURE__ */ jsxRuntime.jsx(icons.Plus, {}), variant, size, children });
+ const HomePage = () => {
+   const { formatMessage } = reactIntl.useIntl();
+   const navigate = reactRouterDom.useNavigate();
+diff --git a/node_modules/tree-menus/dist/_chunks/App-DyO6P660.mjs b/node_modules/tree-menus/dist/_chunks/App-DyO6P660.mjs
+index e24a897..84d3827 100644
+--- a/node_modules/tree-menus/dist/_chunks/App-DyO6P660.mjs
++++ b/node_modules/tree-menus/dist/_chunks/App-DyO6P660.mjs
+@@ -6,7 +6,7 @@ import { Layout, Plus } from "@strapi/icons";
+ import { useIntl } from "react-intl";
+ import { g as getTranslation } from "./index-CfJFWOIE.mjs";
+ const UID_MENU = "plugin::tree-menus.menu";
+-const Action = ({ children, onClick, size, variant }) => /* @__PURE__ */ jsx(Button, { onClick, startIcon: /* @__PURE__ */ jsx(Plus, {}), variant, size, children });
++const Action = ({ children, onClick, size = "S", variant }) => /* @__PURE__ */ jsx(Button, { onClick, startIcon: /* @__PURE__ */ jsx(Plus, {}), variant, size, children });
+ const HomePage = () => {
+   const { formatMessage } = useIntl();
+   const navigate = useNavigate();
+diff --git a/node_modules/tree-menus/dist/_chunks/TreeInput-B4_FLdq4.js b/node_modules/tree-menus/dist/_chunks/TreeInput-B4_FLdq4.js
+index 82a5420..47c1154 100644
+--- a/node_modules/tree-menus/dist/_chunks/TreeInput-B4_FLdq4.js
++++ b/node_modules/tree-menus/dist/_chunks/TreeInput-B4_FLdq4.js
+@@ -1427,7 +1427,7 @@ function SortableTree({ collapsible, indicator = false, indentationWidth = 50, r
+         /* @__PURE__ */ jsxRuntime.jsx(
+           designSystem.Button,
+           {
+-            size: "sm",
++            size: "S",
+             startIcon: /* @__PURE__ */ jsxRuntime.jsx(icons.Plus, {}),
+             variant: "secondary",
+             paddingTop: 2,
+diff --git a/node_modules/tree-menus/dist/_chunks/TreeInput-DyBbqM4d.mjs b/node_modules/tree-menus/dist/_chunks/TreeInput-DyBbqM4d.mjs
+index 7d39774..95d9361 100644
+--- a/node_modules/tree-menus/dist/_chunks/TreeInput-DyBbqM4d.mjs
++++ b/node_modules/tree-menus/dist/_chunks/TreeInput-DyBbqM4d.mjs
+@@ -1402,7 +1402,7 @@ function SortableTree({ collapsible, indicator = false, indentationWidth = 50, r
+         /* @__PURE__ */ jsx(
+           Button,
+           {
+-            size: "sm",
++            size: "S",
+             startIcon: /* @__PURE__ */ jsx(Plus, {}),
+             variant: "secondary",
+             paddingTop: 2,
+diff --git a/node_modules/tree-menus/dist/server/index.js b/node_modules/tree-menus/dist/server/index.js
+index 421e262..961dd0f 100644
+--- a/node_modules/tree-menus/dist/server/index.js
++++ b/node_modules/tree-menus/dist/server/index.js
+@@ -215,40 +215,22 @@ const menu$4 = {
+     },
+     "content-type-builder": {
+       visible: true
+-    },
+-    i18n: {
+-      localized: true
+     }
+   },
+   attributes: {
+     title: {
+-      pluginOptions: {
+-        i18n: {
+-          localized: false
+-        }
+-      },
+       type: "string",
+       required: true,
+       maxLength: 100,
+       configurable: false
+     },
+     slug: {
+-      pluginOptions: {
+-        i18n: {
+-          localized: true
+-        }
+-      },
+       type: "uid",
+       targetField: "title",
+       required: true,
+       configurable: false
+     },
+     items: {
+-      pluginOptions: {
+-        i18n: {
+-          localized: true
+-        }
+-      },
+       type: "customField",
+       options: {
+         schemas: JSON.stringify(fieldSchema, null, 2)
+diff --git a/node_modules/tree-menus/dist/server/index.mjs b/node_modules/tree-menus/dist/server/index.mjs
+index c2758f7..d39b5a8 100644
+--- a/node_modules/tree-menus/dist/server/index.mjs
++++ b/node_modules/tree-menus/dist/server/index.mjs
+@@ -194,40 +194,22 @@ const menu$4 = {
+     },
+     "content-type-builder": {
+       visible: true
+-    },
+-    i18n: {
+-      localized: true
+     }
+   },
+   attributes: {
+     title: {
+-      pluginOptions: {
+-        i18n: {
+-          localized: false
+-        }
+-      },
+       type: "string",
+       required: true,
+       maxLength: 100,
+       configurable: false
+     },
+     slug: {
+-      pluginOptions: {
+-        i18n: {
+-          localized: true
+-        }
+-      },
+       type: "uid",
+       targetField: "title",
+       required: true,
+       configurable: false
+     },
+     items: {
+-      pluginOptions: {
+-        i18n: {
+-          localized: true
+-        }
+-      },
+       type: "customField",
+       options: {
+         schemas: JSON.stringify(fieldSchema, null, 2)
