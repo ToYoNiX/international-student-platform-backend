@@ -4,4 +4,4 @@
 
 import { factories } from '@strapi/strapi';
 
-export default factories.createCoreController('api::message.message');
+export default factories.createCoreController('api::message.message' as any);
