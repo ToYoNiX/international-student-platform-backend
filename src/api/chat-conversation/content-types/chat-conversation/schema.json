@@ -1,0 +1,43 @@
+{
+  "kind": "collectionType",
+  "collectionName": "chat_conversations",
+  "info": {
+    "singularName": "chat-conversation",
+    "pluralName": "chat-conversations",
+    "displayName": "Chat Conversation",
+    "description": "Persistent user-admin chat conversations"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "frontendUser": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "required": true
+    },
+    "adminUserId": {
+      "type": "integer",
+      "required": true
+    },
+    "messages": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::chat-message.chat-message",
+      "mappedBy": "conversation"
+    },
+    "lastMessageAt": {
+      "type": "datetime"
+    },
+    "unreadForUser": {
+      "type": "integer",
+      "default": 0
+    },
+    "unreadForAdmin": {
+      "type": "integer",
+      "default": 0
+    }
+  }
+}

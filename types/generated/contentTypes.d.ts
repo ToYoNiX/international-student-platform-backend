@@ -430,6 +430,90 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiChatConversationChatConversation
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'chat_conversations';
+  info: {
+    description: 'Persistent user-admin chat conversations';
+    displayName: 'Chat Conversation';
+    pluralName: 'chat-conversations';
+    singularName: 'chat-conversation';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    adminUserId: Schema.Attribute.Integer & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    frontendUser: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    > &
+      Schema.Attribute.Required;
+    lastMessageAt: Schema.Attribute.DateTime;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::chat-conversation.chat-conversation'
+    > &
+      Schema.Attribute.Private;
+    messages: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::chat-message.chat-message'
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    unreadForAdmin: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    unreadForUser: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiChatMessageChatMessage extends Struct.CollectionTypeSchema {
+  collectionName: 'chat_messages';
+  info: {
+    description: 'Persistent messages in user-admin conversations';
+    displayName: 'Chat Message';
+    pluralName: 'chat-messages';
+    singularName: 'chat-message';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    body: Schema.Attribute.Text & Schema.Attribute.Required;
+    conversation: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::chat-conversation.chat-conversation'
+    > &
+      Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::chat-message.chat-message'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    seenAt: Schema.Attribute.DateTime;
+    senderAdminUserId: Schema.Attribute.Integer;
+    senderFrontendUser: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    senderType: Schema.Attribute.Enumeration<['user', 'admin']> &
+      Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiHeroSlideHeroSlide extends Struct.CollectionTypeSchema {
   collectionName: 'hero_slides';
   info: {
@@ -1081,6 +1165,8 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::chat-conversation.chat-conversation': ApiChatConversationChatConversation;
+      'api::chat-message.chat-message': ApiChatMessageChatMessage;
       'api::hero-slide.hero-slide': ApiHeroSlideHeroSlide;
       'api::page.page': ApiPagePage;
       'plugin::content-releases.release': PluginContentReleasesRelease;

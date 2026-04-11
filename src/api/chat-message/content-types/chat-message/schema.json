@@ -1,0 +1,43 @@
+{
+  "kind": "collectionType",
+  "collectionName": "chat_messages",
+  "info": {
+    "singularName": "chat-message",
+    "pluralName": "chat-messages",
+    "displayName": "Chat Message",
+    "description": "Persistent messages in user-admin conversations"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "conversation": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::chat-conversation.chat-conversation",
+      "inversedBy": "messages",
+      "required": true
+    },
+    "senderType": {
+      "type": "enumeration",
+      "enum": ["user", "admin"],
+      "required": true
+    },
+    "senderFrontendUser": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "senderAdminUserId": {
+      "type": "integer"
+    },
+    "body": {
+      "type": "text",
+      "required": true
+    },
+    "seenAt": {
+      "type": "datetime"
+    }
+  }
+}
