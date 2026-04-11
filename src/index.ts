@@ -26,32 +26,6 @@ const PUBLIC_ACTIONS = [
 
 const READ_ONLY_SUFFIXES = ['.find', '.findOne'];
 
-const DEFAULT_HERO_NAV_ITEMS = [
-  {
-    id: '1',
-    title: 'Home',
-    url: '/',
-    target: '_self',
-    accessRole: 'public',
-    children: [],
-  },
-  {
-    id: '2',
-    title: 'Resources',
-    url: '/resources',
-    target: '_self',
-    accessRole: 'public',
-    children: [],
-  },
-  {
-    id: '3',
-    title: 'Contact',
-    url: '/contact',
-    target: '_self',
-    accessRole: 'public',
-    children: [],
-  },
-];
 
 const flattenActionMap = (actionMap: Record<string, any>): string[] => {
   const actions: string[] = [];
@@ -156,24 +130,6 @@ const removeDashboardAuthorRole = async (strapi: Core.Strapi) => {
   });
 };
 
-const ensureDefaultHeroNavMenu = async (strapi: Core.Strapi) => {
-  const existingHeroNav = await strapi.db.query('plugin::tree-menus.menu').findOne({
-    where: { title: 'hero-nav' },
-  });
-
-  if (existingHeroNav) {
-    return;
-  }
-
-  await strapi.db.query('plugin::tree-menus.menu').create({
-    data: {
-      title: 'hero-nav',
-      slug: 'hero-nav',
-      items: JSON.stringify(DEFAULT_HERO_NAV_ITEMS),
-      publishedAt: new Date(),
-    } as any,
-  });
-};
 
 export default {
   /**
@@ -232,8 +188,6 @@ export default {
     await setRolePermissions(strapi, publicRole.id, publicActions);
     await setRolePermissions(strapi, visitorRole.id, visitorAndCollegeActions);
     await setRolePermissions(strapi, collegeRole.id, visitorAndCollegeActions);
-
-    await ensureDefaultHeroNavMenu(strapi);
 
     // Strapi register requires a valid default role in plugin advanced settings.
     const pluginStore = strapi.store({ type: 'plugin', name: 'users-permissions' });
