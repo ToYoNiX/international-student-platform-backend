@@ -13,7 +13,6 @@ type UserShape = {
   id: number;
   email: string;
   username: string;
-  userType?: string;
   role?: RoleShape | null;
   [key: string]: unknown;
 };
@@ -81,22 +80,26 @@ const authControllerFactory = ({ strapi, defaultRegister, defaultCallback }: Aut
 
   async register(ctx: any) {
     const body = ctx.request.body || {};
-    const userType = typeof body.userType === 'string' ? body.userType.trim() : '';
+    const requestedRole = typeof body.role === 'string' ? body.role.trim() : '';
 
-    if (!userType || userType === 'admin') {
-      throw new ForbiddenError('Invalid userType');
+    if (!requestedRole) {
+      throw new ForbiddenError('Invalid role');
     }
 
-    if (!['visitor', 'college-member'].includes(userType)) {
-      throw new ForbiddenError('Invalid userType');
+    if (!['visitor', 'college-member'].includes(requestedRole)) {
+      throw new ForbiddenError('Invalid role');
     }
 
     const universityId =
       typeof body.universityId === 'string' ? body.universityId.trim() : body.universityId;
 
-    if (userType === 'college-member' && !universityId) {
+    if (requestedRole === 'college-member' && !universityId) {
       return ctx.badRequest('universityId is required for college-member users');
     }
+
+    // Strapi's default register action rejects unknown parameters like role.
+    delete body.role;
+    ctx.request.body = body;
 
     let defaultResponse: any;
     const originalSend = ctx.send.bind(ctx);
@@ -115,19 +118,18 @@ const authControllerFactory = ({ strapi, defaultRegister, defaultCallback }: Aut
     }
 
     const role = await strapi.db.query('plugin::users-permissions.role').findOne({
-      where: { type: userType },
+      where: { type: requestedRole },
     });
 
     if (!role) {
-      throw new ApplicationError(`Role not found for userType: ${userType}`);
+      throw new ApplicationError(`Role not found for role: ${requestedRole}`);
     }
 
     await strapi.db.query('plugin::users-permissions.user').update({
       where: { id: createdUserId },
       data: {
         role: role.id,
-        userType,
-        universityId: userType === 'college-member' ? universityId : null,
+        universityId: requestedRole === 'college-member' ? universityId : null,
       },
     });
 
@@ -145,7 +147,6 @@ const authControllerFactory = ({ strapi, defaultRegister, defaultCallback }: Aut
     const jwt = strapi.plugin('users-permissions').service('jwt').issue({
       id: userWithRole.id,
       email: userWithRole.email,
-      userType: userWithRole.userType,
       role: userWithRole.role ? toRolePayload(userWithRole.role) : null,
     });
     return ctx.send({ jwt, user: userPayload });

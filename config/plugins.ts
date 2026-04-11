@@ -10,7 +10,6 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin =>
 				allowedFields: [
 					'displayName',
 					'universityId',
-					'userType',
 					'bio',
 					'phoneNumber',
 					'preferences',
@@ -96,13 +95,60 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin =>
 						],
 					},
 					{
-						id: 'isProtected',
-						label: 'Protected (requires login)',
-						type: 'bool',
-						validationType: 'boolean',
-						value: false,
-						required: false,
-						validations: [{ type: 'default', params: [false] }],
+						id: 'accessRole',
+						label: 'Who can access this item',
+						type: 'select',
+						validationType: 'mixed',
+						value: 'public',
+						required: true,
+						validations: [
+							{
+								type: 'oneOf',
+								params: [
+									['public', 'visitor', 'college-member'],
+									'Must be public, visitor, or college-member',
+								],
+							},
+							{ type: 'default', params: ['public'] },
+						],
+						options: [
+							{
+								key: 'public',
+								value: 'public',
+								metadatas: {
+									intlLabel: {
+										id: 'tree-menus.accessRole.options.public',
+										defaultMessage: 'Public',
+									},
+									disabled: false,
+									hidden: false,
+								},
+							},
+							{
+								key: 'visitor',
+								value: 'visitor',
+								metadatas: {
+									intlLabel: {
+										id: 'tree-menus.accessRole.options.visitor',
+										defaultMessage: 'Visitor',
+									},
+									disabled: false,
+									hidden: false,
+								},
+							},
+							{
+								key: 'college-member',
+								value: 'college-member',
+								metadatas: {
+									intlLabel: {
+										id: 'tree-menus.accessRole.options.collegeMember',
+										defaultMessage: 'College member',
+									},
+									disabled: false,
+									hidden: false,
+								},
+							},
+						],
 					},
 				],
 			},

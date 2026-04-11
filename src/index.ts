@@ -1,13 +1,11 @@
 import type { Core } from '@strapi/strapi';
 
-type RoleType = 'public' | 'authenticated' | 'visitor' | 'college-member' | 'admin';
+type RoleType = 'public' | 'visitor' | 'college-member';
 
 const ROLE_DESCRIPTIONS: Record<RoleType, string> = {
   public: 'Default role for unauthenticated users.',
-  authenticated: 'Legacy authenticated role (unused by custom registration).',
   visitor: 'External users without a university ID.',
   'college-member': 'College students/staff users with a university ID.',
-  admin: 'Application admin users assigned manually by developers.',
 };
 
 const VISITOR_ACTIONS = [
@@ -47,6 +45,16 @@ const ensureRole = async (strapi: Core.Strapi, type: RoleType, name: string) => 
   });
 
   if (existing) {
+    if (existing.name !== name || existing.description !== ROLE_DESCRIPTIONS[type]) {
+      await strapi.db.query('plugin::users-permissions.role').update({
+        where: { id: existing.id },
+        data: {
+          name,
+          description: ROLE_DESCRIPTIONS[type],
+        },
+      });
+    }
+
     return existing;
   }
 
@@ -64,13 +72,20 @@ const setRolePermissions = async (
   roleId: number,
   actions: string[]
 ) => {
-  const existingPermissionsCount = await strapi
+  const existingPermissions = await strapi
     .db
     .query('plugin::users-permissions.permission')
-    .count({ where: { role: roleId } });
+    .findMany({ where: { role: roleId } });
 
-  // Do not rewrite permissions for roles that are already configured.
-  if (existingPermissionsCount > 0) {
+  const desiredActions = [...new Set(actions)].sort();
+  const currentActions = (existingPermissions || [])
+    .map((permission: any) => permission.action)
+    .sort();
+
+  if (
+    desiredActions.length === currentActions.length &&
+    desiredActions.every((action, index) => action === currentActions[index])
+  ) {
     return;
   }
 
@@ -79,12 +94,37 @@ const setRolePermissions = async (
   });
 
   await Promise.all(
-    actions.map((action) =>
+    desiredActions.map((action) =>
       strapi.db.query('plugin::users-permissions.permission').create({
         data: { role: roleId, action },
       })
     )
   );
+};
+
+const removeDashboardAuthorRole = async (strapi: Core.Strapi) => {
+  const authorRole = await strapi.db.query('admin::role').findOne({
+    where: {
+      $or: [{ code: 'strapi-author' }, { name: 'Author' }],
+    } as any,
+  });
+
+  if (!authorRole) {
+    return;
+  }
+
+  await strapi.db.query('admin::permission').deleteMany({
+    where: { role: authorRole.id },
+  });
+
+  const hasUsersRolesLinkTable = await strapi.db.connection.schema.hasTable('admin_users_roles_lnk');
+  if (hasUsersRolesLinkTable) {
+    await strapi.db.connection('admin_users_roles_lnk').where({ role_id: authorRole.id }).delete();
+  }
+
+  await strapi.db.query('admin::role').delete({
+    where: { id: authorRole.id },
+  });
 };
 
 export default {
@@ -106,38 +146,54 @@ export default {
   async bootstrap({ strapi }: { strapi: Core.Strapi }) {
     const frontendUrl = strapi.config.get('server.frontendUrl', process.env.FRONTEND_URL);
 
+    await removeDashboardAuthorRole(strapi);
+
     // Keep permissions list aligned with current routes/actions before assigning role permissions.
     await strapi.plugin('users-permissions').service('users-permissions').syncPermissions();
 
-    const publicRole = await ensureRole(strapi, 'public', 'Public');
-    const authenticatedRole = await ensureRole(strapi, 'authenticated', 'Authenticated');
+    const publicRole = await ensureRole(strapi, 'public', 'public');
     const visitorRole = await ensureRole(strapi, 'visitor', 'visitor');
     const collegeRole = await ensureRole(strapi, 'college-member', 'college-member');
-    const adminRole = await ensureRole(strapi, 'admin', 'admin');
 
     const actionMap = strapi.plugin('users-permissions').service('users-permissions').getActions();
     const allAvailableActions = flattenActionMap(actionMap);
+    const apiActions = allAvailableActions.filter((action) => action.startsWith('api::'));
 
-    const adminActions = allAvailableActions.filter(
-      (action) =>
-        action.startsWith('api::') ||
-        action.startsWith('plugin::upload.') ||
-        action.startsWith('plugin::users-permissions.')
-    );
+    const visitorAndCollegeActions = [...VISITOR_ACTIONS, ...apiActions];
+
+    const legacyAuthenticatedRole = await strapi.db
+      .query('plugin::users-permissions.role')
+      .findOne({ where: { type: 'authenticated' } });
+
+    if (legacyAuthenticatedRole) {
+      await strapi.db.query('plugin::users-permissions.permission').deleteMany({
+        where: { role: legacyAuthenticatedRole.id },
+      });
+
+      await strapi.db.query('plugin::users-permissions.role').delete({
+        where: { id: legacyAuthenticatedRole.id },
+      });
+    }
 
     await setRolePermissions(strapi, publicRole.id, PUBLIC_ACTIONS);
-    await setRolePermissions(strapi, visitorRole.id, VISITOR_ACTIONS);
-    await setRolePermissions(strapi, collegeRole.id, VISITOR_ACTIONS);
-    await setRolePermissions(strapi, adminRole.id, adminActions);
+    await setRolePermissions(strapi, visitorRole.id, visitorAndCollegeActions);
+    await setRolePermissions(strapi, collegeRole.id, visitorAndCollegeActions);
 
-    // Explicitly disable legacy authenticated role so custom roles are always used.
-    await setRolePermissions(strapi, authenticatedRole.id, []);
+    // Strapi register requires a valid default role in plugin advanced settings.
+    const pluginStore = strapi.store({ type: 'plugin', name: 'users-permissions' });
+    const advancedSettings =
+      ((await pluginStore.get({ key: 'advanced' })) as Record<string, any> | null) || {};
+
+    await pluginStore.set({
+      key: 'advanced',
+      value: {
+        ...advancedSettings,
+        default_role: 'visitor',
+      },
+    });
 
     // Keep reset-password links aligned with frontend URL expected by the client app.
     if (frontendUrl) {
-      const pluginStore = strapi.store({ type: 'plugin', name: 'users-permissions' });
-      const advancedSettings =
-        ((await pluginStore.get({ key: 'advanced' })) as Record<string, any> | null) || {};
       const emailSettings =
         ((await pluginStore.get({ key: 'email' })) as Record<string, any> | null) || {};
 
@@ -145,6 +201,7 @@ export default {
         key: 'advanced',
         value: {
           ...advancedSettings,
+          default_role: 'visitor',
           email_reset_password: `${frontendUrl}/reset-password`,
         },
       });

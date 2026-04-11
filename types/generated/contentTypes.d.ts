@@ -430,108 +430,6 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface ApiAcademicsAcademics extends Struct.SingleTypeSchema {
-  collectionName: 'academics_pages';
-  info: {
-    description: 'Academics page content';
-    displayName: 'Academics';
-    pluralName: 'academics-pages';
-    singularName: 'academics';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    blocks: Schema.Attribute.DynamicZone<
-      ['shared.media', 'shared.quote', 'shared.rich-text', 'shared.slider']
-    >;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::academics.academics'
-    > &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
-    seo: Schema.Attribute.Component<'shared.seo', false>;
-    subtitle: Schema.Attribute.Text;
-    title: Schema.Attribute.String & Schema.Attribute.Required;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
-export interface ApiAnnouncementsAnnouncements extends Struct.SingleTypeSchema {
-  collectionName: 'announcements_pages';
-  info: {
-    description: 'Announcements page content';
-    displayName: 'Announcements';
-    pluralName: 'announcements-pages';
-    singularName: 'announcements';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    blocks: Schema.Attribute.DynamicZone<
-      ['shared.media', 'shared.quote', 'shared.rich-text', 'shared.slider']
-    >;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::announcements.announcements'
-    > &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
-    seo: Schema.Attribute.Component<'shared.seo', false>;
-    subtitle: Schema.Attribute.Text;
-    title: Schema.Attribute.String & Schema.Attribute.Required;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
-export interface ApiContactUsContactUs extends Struct.SingleTypeSchema {
-  collectionName: 'contact_us_pages';
-  info: {
-    description: 'Contact page content';
-    displayName: 'Contact Us';
-    pluralName: 'contact-us-pages';
-    singularName: 'contact-us';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    blocks: Schema.Attribute.DynamicZone<
-      ['shared.media', 'shared.quote', 'shared.rich-text', 'shared.slider']
-    >;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::contact-us.contact-us'
-    > &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
-    seo: Schema.Attribute.Component<'shared.seo', false>;
-    subtitle: Schema.Attribute.Text;
-    title: Schema.Attribute.String & Schema.Attribute.Required;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
 export interface ApiHeroSlideHeroSlide extends Struct.CollectionTypeSchema {
   collectionName: 'hero_slides';
   info: {
@@ -571,23 +469,23 @@ export interface ApiHeroSlideHeroSlide extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface ApiHomepageHomepage extends Struct.SingleTypeSchema {
-  collectionName: 'homepages';
+export interface ApiPagePage extends Struct.CollectionTypeSchema {
+  collectionName: 'pages';
   info: {
-    description: 'Homepage content';
-    displayName: 'Homepage';
-    pluralName: 'homepage-pages';
-    singularName: 'homepage';
+    description: 'Flexible content pages managed in production';
+    displayName: 'Pages';
+    pluralName: 'pages';
+    singularName: 'page';
   };
   options: {
     draftAndPublish: false;
   };
-  pluginOptions: {
-    'content-type-builder': {
-      visible: false;
-    };
-  };
   attributes: {
+    accessRole: Schema.Attribute.Enumeration<
+      ['public', 'visitor', 'college-member']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'public'>;
     blocks: Schema.Attribute.DynamicZone<
       ['shared.media', 'shared.quote', 'shared.rich-text', 'shared.slider']
     >;
@@ -595,82 +493,13 @@ export interface ApiHomepageHomepage extends Struct.SingleTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::homepage.homepage'
-    > &
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::page.page'> &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
     seo: Schema.Attribute.Component<'shared.seo', false>;
-    subtitle: Schema.Attribute.Text;
-    title: Schema.Attribute.String & Schema.Attribute.Required;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
-export interface ApiQuestionnairesQuestionnaires
-  extends Struct.SingleTypeSchema {
-  collectionName: 'questionnaires_pages';
-  info: {
-    description: 'Questionnaires page content';
-    displayName: 'Questionnaires';
-    pluralName: 'questionnaires-pages';
-    singularName: 'questionnaires';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    blocks: Schema.Attribute.DynamicZone<
-      ['shared.media', 'shared.quote', 'shared.rich-text', 'shared.slider']
-    >;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::questionnaires.questionnaires'
-    > &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
-    seo: Schema.Attribute.Component<'shared.seo', false>;
-    subtitle: Schema.Attribute.Text;
-    title: Schema.Attribute.String & Schema.Attribute.Required;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
-export interface ApiResourcesResources extends Struct.SingleTypeSchema {
-  collectionName: 'resources_pages';
-  info: {
-    description: 'Resources page content';
-    displayName: 'Resources';
-    pluralName: 'resources-pages';
-    singularName: 'resources';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    blocks: Schema.Attribute.DynamicZone<
-      ['shared.media', 'shared.quote', 'shared.rich-text', 'shared.slider']
-    >;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::resources.resources'
-    > &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
-    seo: Schema.Attribute.Component<'shared.seo', false>;
+    slug: Schema.Attribute.UID<'title'> &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
     subtitle: Schema.Attribute.Text;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
@@ -945,7 +774,7 @@ export interface PluginTreeMenusMenu extends Struct.CollectionTypeSchema {
       Schema.Attribute.CustomField<
         'plugin::tree-menus.tree',
         {
-          schemas: '{\n  "attributes": [\n    {\n      "id": "title",\n      "label": "Title",\n      "placeholder": "Enter item title",\n      "type": "text",\n      "validationType": "string",\n      "required": true,\n      "validations": [\n        {\n          "type": "required",\n          "params": [\n            "Title is required"\n          ]\n        },\n        {\n          "type": "max",\n          "params": [\n            100,\n            "Title cannot exceed 100 characters"\n          ]\n        },\n        {\n          "type": "default",\n          "params": [\n            "New Item"\n          ]\n        }\n      ]\n    },\n    {\n      "id": "url",\n      "label": "URL",\n      "placeholder": "Enter URL (e.g. /about)",\n      "type": "text",\n      "validationType": "string",\n      "required": true,\n      "validations": [\n        {\n          "type": "required",\n          "params": [\n            "URL is required"\n          ]\n        },\n        {\n          "type": "max",\n          "params": [\n            200,\n            "URL cannot exceed 200 characters"\n          ]\n        },\n        {\n          "type": "default",\n          "params": [\n            "/"\n          ]\n        }\n      ]\n    },\n    {\n      "id": "target",\n      "label": "Link Target",\n      "type": "select",\n      "validationType": "mixed",\n      "value": "_self",\n      "required": false,\n      "validations": [\n        {\n          "type": "oneOf",\n          "params": [\n            [\n              "_blank",\n              "_self"\n            ],\n            "Must be _blank or _self"\n          ]\n        },\n        {\n          "type": "default",\n          "params": [\n            "_self"\n          ]\n        }\n      ],\n      "options": [\n        {\n          "key": "_self",\n          "value": "_self",\n          "metadatas": {\n            "intlLabel": {\n              "id": "tree-menus.target.options._self",\n              "defaultMessage": "Same window (_self)"\n            },\n            "disabled": false,\n            "hidden": false\n          }\n        },\n        {\n          "key": "_blank",\n          "value": "_blank",\n          "metadatas": {\n            "intlLabel": {\n              "id": "tree-menus.target.options._blank",\n              "defaultMessage": "New window (_blank)"\n            },\n            "disabled": false,\n            "hidden": false\n          }\n        }\n      ]\n    },\n    {\n      "id": "isProtected",\n      "label": "Protected (requires login)",\n      "type": "bool",\n      "validationType": "boolean",\n      "value": false,\n      "required": false,\n      "validations": [\n        {\n          "type": "default",\n          "params": [\n            false\n          ]\n        }\n      ]\n    }\n  ]\n}';
+          schemas: '{\n  "attributes": [\n    {\n      "id": "title",\n      "label": "Title",\n      "placeholder": "Enter item title",\n      "type": "text",\n      "validationType": "string",\n      "required": true,\n      "validations": [\n        {\n          "type": "required",\n          "params": [\n            "Title is required"\n          ]\n        },\n        {\n          "type": "max",\n          "params": [\n            100,\n            "Title cannot exceed 100 characters"\n          ]\n        },\n        {\n          "type": "default",\n          "params": [\n            "New Item"\n          ]\n        }\n      ]\n    },\n    {\n      "id": "url",\n      "label": "URL",\n      "placeholder": "Enter URL (e.g. /about)",\n      "type": "text",\n      "validationType": "string",\n      "required": true,\n      "validations": [\n        {\n          "type": "required",\n          "params": [\n            "URL is required"\n          ]\n        },\n        {\n          "type": "max",\n          "params": [\n            200,\n            "URL cannot exceed 200 characters"\n          ]\n        },\n        {\n          "type": "default",\n          "params": [\n            "/"\n          ]\n        }\n      ]\n    },\n    {\n      "id": "target",\n      "label": "Link Target",\n      "type": "select",\n      "validationType": "mixed",\n      "value": "_self",\n      "required": false,\n      "validations": [\n        {\n          "type": "oneOf",\n          "params": [\n            [\n              "_blank",\n              "_self"\n            ],\n            "Must be _blank or _self"\n          ]\n        },\n        {\n          "type": "default",\n          "params": [\n            "_self"\n          ]\n        }\n      ],\n      "options": [\n        {\n          "key": "_self",\n          "value": "_self",\n          "metadatas": {\n            "intlLabel": {\n              "id": "tree-menus.target.options._self",\n              "defaultMessage": "Same window (_self)"\n            },\n            "disabled": false,\n            "hidden": false\n          }\n        },\n        {\n          "key": "_blank",\n          "value": "_blank",\n          "metadatas": {\n            "intlLabel": {\n              "id": "tree-menus.target.options._blank",\n              "defaultMessage": "New window (_blank)"\n            },\n            "disabled": false,\n            "hidden": false\n          }\n        }\n      ]\n    },\n    {\n      "id": "accessRole",\n      "label": "Who can access this item",\n      "type": "select",\n      "validationType": "mixed",\n      "value": "public",\n      "required": true,\n      "validations": [\n        {\n          "type": "oneOf",\n          "params": [\n            [\n              "public",\n              "visitor",\n              "college-member"\n            ],\n            "Must be public, visitor, or college-member"\n          ]\n        },\n        {\n          "type": "default",\n          "params": [\n            "public"\n          ]\n        }\n      ],\n      "options": [\n        {\n          "key": "public",\n          "value": "public",\n          "metadatas": {\n            "intlLabel": {\n              "id": "tree-menus.accessRole.options.public",\n              "defaultMessage": "Public"\n            },\n            "disabled": false,\n            "hidden": false\n          }\n        },\n        {\n          "key": "visitor",\n          "value": "visitor",\n          "metadatas": {\n            "intlLabel": {\n              "id": "tree-menus.accessRole.options.visitor",\n              "defaultMessage": "Visitor"\n            },\n            "disabled": false,\n            "hidden": false\n          }\n        },\n        {\n          "key": "college-member",\n          "value": "college-member",\n          "metadatas": {\n            "intlLabel": {\n              "id": "tree-menus.accessRole.options.collegeMember",\n              "defaultMessage": "College member"\n            },\n            "disabled": false,\n            "hidden": false\n          }\n        }\n      ]\n    }\n  ]\n}';
         }
       >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
@@ -1238,10 +1067,6 @@ export interface PluginUsersPermissionsUser
       Schema.Attribute.SetMinMaxLength<{
         minLength: 3;
       }>;
-    userType: Schema.Attribute.Enumeration<
-      ['visitor', 'college-member', 'admin']
-    > &
-      Schema.Attribute.Required;
   };
 }
 
@@ -1256,13 +1081,8 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
-      'api::academics.academics': ApiAcademicsAcademics;
-      'api::announcements.announcements': ApiAnnouncementsAnnouncements;
-      'api::contact-us.contact-us': ApiContactUsContactUs;
       'api::hero-slide.hero-slide': ApiHeroSlideHeroSlide;
-      'api::homepage.homepage': ApiHomepageHomepage;
-      'api::questionnaires.questionnaires': ApiQuestionnairesQuestionnaires;
-      'api::resources.resources': ApiResourcesResources;
+      'api::page.page': ApiPagePage;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

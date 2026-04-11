@@ -4,7 +4,6 @@ type JwtIssuePayload = {
   id?: number;
   userId?: number;
   email?: string;
-  userType?: string;
   role?: {
     id: number;
     name: string;

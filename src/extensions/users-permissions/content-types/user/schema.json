@@ -77,11 +77,6 @@
       "type": "string",
       "required": false
     },
-    "userType": {
-      "type": "enumeration",
-      "enum": ["visitor", "college-member", "admin"],
-      "required": true
-    },
     "bio": {
       "type": "text",
       "required": false
