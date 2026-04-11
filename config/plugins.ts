@@ -154,6 +154,10 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin =>
 			},
 		},
 	},
+	'chat-inbox': {
+		enabled: true,
+		resolve: './src/plugins/chat-inbox',
+	},
 	email: {
 		config: {
 			provider: 'nodemailer',

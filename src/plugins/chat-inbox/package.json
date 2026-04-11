@@ -1,0 +1,12 @@
+{
+  "name": "chat-inbox",
+  "version": "0.0.1",
+  "private": true,
+  "type": "commonjs",
+  "strapi": {
+    "kind": "plugin",
+    "name": "chat-inbox",
+    "displayName": "Chat Inbox",
+    "description": "Admin chat inbox for user conversations"
+  }
+}
