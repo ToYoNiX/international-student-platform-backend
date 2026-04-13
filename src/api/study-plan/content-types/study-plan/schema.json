@@ -1,0 +1,14 @@
+{
+  "kind": "collectionType",
+  "collectionName": "study_plans",
+  "info": {
+    "singularName": "study-plan",
+    "pluralName": "study-plans",
+    "displayName": "study-plan"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {}
+}

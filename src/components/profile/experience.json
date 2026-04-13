@@ -1,0 +1,9 @@
+{
+  "collectionName": "components_profile_experiences",
+  "info": { "displayName": "Experience", "icon": "briefcase" },
+  "attributes": {
+    "title": { "type": "string" },
+    "period": { "type": "string" },
+    "description": { "type": "text" }
+  }
+}
