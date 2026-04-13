@@ -700,13 +700,12 @@ export interface ApiPagePage extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface ApiStaffSingularStaffSingular
-  extends Struct.CollectionTypeSchema {
-  collectionName: 'staff_plural';
+export interface ApiScheduleSchedule extends Struct.CollectionTypeSchema {
+  collectionName: 'schedules';
   info: {
-    displayName: 'Staff-Profile';
-    pluralName: 'staff-plural';
-    singularName: 'staff-singular';
+    displayName: 'Schedules';
+    pluralName: 'schedules';
+    singularName: 'schedule';
   };
   options: {
     draftAndPublish: true;
@@ -715,10 +714,22 @@ export interface ApiStaffSingularStaffSingular
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    IT_undergrad_finals_schedule: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
+    IT_undergrad_quiz_1_schedule: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
+    IT_undergrad_quiz_2_schedule: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
+    IT_undergrad_semester_schedule: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
-      'api::staff-singular.staff-singular'
+      'api::schedule.schedule'
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
@@ -731,7 +742,7 @@ export interface ApiStaffSingularStaffSingular
 export interface ApiStudyPlanStudyPlan extends Struct.CollectionTypeSchema {
   collectionName: 'study_plans';
   info: {
-    displayName: 'study-plan';
+    displayName: 'Study Plans';
     pluralName: 'study-plans';
     singularName: 'study-plan';
   };
@@ -748,7 +759,35 @@ export interface ApiStudyPlanStudyPlan extends Struct.CollectionTypeSchema {
       'api::study-plan.study-plan'
     > &
       Schema.Attribute.Private;
+    Postgrad_AI: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
+    Postgrad_CS: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
+    Professional_diplomas: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
     publishedAt: Schema.Attribute.DateTime;
+    Undergrad_AI_New_Curriculum: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
+    Undergrad_AI_Old_Curriculum: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
+    Undergrad_CS_New_Curriculum: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
+    Undergrad_CS_Old_Curriculum: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
+    Undergrad_IS_New_Curriculum: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
+    Undergrad_IS_Old_Curriculum: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1335,7 +1374,7 @@ declare module '@strapi/strapi' {
       'api::hero-slide.hero-slide': ApiHeroSlideHeroSlide;
       'api::news-item.news-item': ApiNewsItemNewsItem;
       'api::page.page': ApiPagePage;
-      'api::staff-singular.staff-singular': ApiStaffSingularStaffSingular;
+      'api::schedule.schedule': ApiScheduleSchedule;
       'api::study-plan.study-plan': ApiStudyPlanStudyPlan;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
