@@ -6,6 +6,48 @@ import { factories } from '@strapi/strapi';
 
 type AccessRole = 'public' | 'visitor' | 'college-member';
 
+const buildDefaultPagePopulate = () => ({
+	seo: {
+		populate: ['shareImage'],
+	},
+	blocks: {
+		on: {
+			'shared.media': {
+				populate: ['file'],
+			},
+			'shared.quote': true,
+			'shared.rich-text': true,
+			'shared.slider': {
+				populate: ['files'],
+			},
+			'shared.table': {
+				populate: {
+					columns: {
+						populate: ['values'],
+					},
+				},
+			},
+		},
+	},
+});
+
+const applyDefaultPopulateWhenWildcard = (ctx: any): void => {
+	const currentPopulate = ctx?.query?.populate;
+	const shouldApplyPopulate =
+		!currentPopulate ||
+		currentPopulate === '*' ||
+		(Array.isArray(currentPopulate) && currentPopulate.includes('*'));
+
+	if (!shouldApplyPopulate) {
+		return;
+	}
+
+	ctx.query = {
+		...ctx.query,
+		populate: buildDefaultPagePopulate(),
+	};
+};
+
 const canAccessPage = (requiredRole: AccessRole | undefined, requesterRole: string): boolean => {
 	if (!requiredRole || requiredRole === 'public') {
 		return true;
@@ -35,6 +77,7 @@ const getRequesterRole = async (strapi: any, ctx: any): Promise<string> => {
 
 export default factories.createCoreController('api::page.page' as any, ({ strapi }) => ({
 	async find(ctx) {
+		applyDefaultPopulateWhenWildcard(ctx);
 		const response = (await super.find(ctx)) as any;
 		const requesterRole = await getRequesterRole(strapi, ctx);
 
@@ -56,6 +99,7 @@ export default factories.createCoreController('api::page.page' as any, ({ strapi
 	},
 
 	async findOne(ctx) {
+		applyDefaultPopulateWhenWildcard(ctx);
 		const response = (await super.findOne(ctx)) as any;
 		const requesterRole = await getRequesterRole(strapi, ctx);
 		const requiredRole = response?.data?.accessRole as AccessRole | undefined;

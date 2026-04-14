@@ -1,0 +1,30 @@
+{
+  "kind": "collectionType",
+  "collectionName": "academic_staffs",
+  "info": {
+    "singularName": "academic-staff",
+    "pluralName": "academic-staffs",
+    "displayName": "Academic Staff"
+  },
+  "options": { "draftAndPublish": true },
+  "attributes": {
+    "name": { "type": "string", "required": true },
+    "role": { "type": "string", "required": true },
+    "specialty": { "type": "string" },
+    "email": { "type": "email" },
+    "bio": { "type": "text" },
+    "cvLabel": { "type": "string", "default": "Download CV (PDF)" },
+    
+    "imageUrl": { "type": "media", "multiple": false, "allowedTypes": ["images"] },
+    "cvUrl": { "type": "media", "multiple": false, "allowedTypes": ["files"] },
+    
+    "qualifications": { "type": "json" },
+    "researchDirections": { "type": "json" },
+    
+    "experience": { 
+      "type": "component", 
+      "repeatable": true, 
+      "component": "profile.experience" 
+    }
+  }
+}

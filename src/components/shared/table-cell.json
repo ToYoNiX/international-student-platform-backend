@@ -1,0 +1,13 @@
+{
+  "collectionName": "components_shared_table_cells",
+  "info": {
+    "displayName": "Table Cell",
+    "icon": "bulletList"
+  },
+  "options": {},
+  "attributes": {
+    "value": {
+      "type": "text"
+    }
+  }
+}
