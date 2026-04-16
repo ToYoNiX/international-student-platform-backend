@@ -1,61 +1,140 @@
-# 🚀 Getting started with Strapi
+# International Student Platform — Backend
 
-Strapi comes with a full featured [Command Line Interface](https://docs.strapi.io/dev-docs/cli) (CLI) which lets you scaffold and manage your project in seconds.
-
-### `develop`
-
-Start your Strapi application with autoReload enabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-develop)
-
-```
-npm run develop
-# or
-yarn develop
-```
-
-### `start`
-
-Start your Strapi application with autoReload disabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-start)
-
-```
-npm run start
-# or
-yarn start
-```
-
-### `build`
-
-Build your admin panel. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-build)
-
-```
-npm run build
-# or
-yarn build
-```
-
-## ⚙️ Deployment
-
-Strapi gives you many possible deployment options for your project including [Strapi Cloud](https://cloud.strapi.io). Browse the [deployment section of the documentation](https://docs.strapi.io/dev-docs/deployment) to find the best solution for your use case.
-
-```
-yarn strapi deploy
-```
-
-## 📚 Learn more
-
-- [Resource center](https://strapi.io/resource-center) - Strapi resource center.
-- [Strapi documentation](https://docs.strapi.io) - Official Strapi documentation.
-- [Strapi tutorials](https://strapi.io/tutorials) - List of tutorials made by the core team and the community.
-- [Strapi blog](https://strapi.io/blog) - Official Strapi blog containing articles made by the Strapi team and the community.
-- [Changelog](https://strapi.io/changelog) - Find out about the Strapi product updates, new features and general improvements.
-
-Feel free to check out the [Strapi GitHub repository](https://github.com/strapi/strapi). Your feedback and contributions are welcome!
-
-## ✨ Community
-
-- [Discord](https://discord.strapi.io) - Come chat with the Strapi community including the core team.
-- [Forum](https://forum.strapi.io/) - Place to discuss, ask questions and find answers, show your Strapi project and get feedback or just talk with other Community members.
-- [Awesome Strapi](https://github.com/strapi/awesome-strapi) - A curated list of awesome things related to Strapi.
+Strapi v5 CMS powering the MUST (Misr University for Science & Technology) International Student Platform. Provides a REST/GraphQL API and a branded admin dashboard for managing all platform content.
 
 ---
 
-<sub>🤫 Psst! [Strapi is hiring](https://strapi.io/careers).</sub>
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | Strapi v5.41.1 |
+| Runtime | Node.js >=20 |
+| Database | SQLite (dev) / PostgreSQL or MySQL (prod) |
+| Auth | JWT via `users-permissions` plugin |
+| Email | Nodemailer (SMTP) |
+
+---
+
+## Content Types
+
+| Collection | Description |
+|------------|-------------|
+| `academic-staff` | University staff profiles |
+| `chat-conversation` | Chat threads between users |
+| `chat-message` | Individual messages within a conversation |
+| `event` | Campus events and announcements |
+| `hero-slide` | Homepage hero carousel slides |
+| `news-item` | News articles |
+| `page` | Generic CMS pages |
+| `schedule` | Class / academic schedules |
+| `study-plan` | Student study plans |
+
+---
+
+## Plugins
+
+- **users-permissions** — JWT authentication with 7-day token expiry. Registration supports custom fields: `displayName`, `universityId`, `bio`, `phoneNumber`, `preferences`.
+- **tree-menus** — Hierarchical menu management (title, URL, target, access roles).
+- **chat-inbox** — Custom plugin (`src/plugins/chat-inbox`) providing an admin inbox UI for conversations and messaging.
+- **email** — Nodemailer provider, configured via environment variables.
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js >= 20
+- npm >= 9
+
+### Install dependencies
+
+```bash
+npm install
+```
+
+### Development (with auto-reload)
+
+```bash
+npm run develop
+```
+
+### Production start
+
+```bash
+npm run start
+```
+
+### Build admin panel
+
+```bash
+npm run build
+```
+
+---
+
+## Environment Variables
+
+Create a `.env` file at the project root. Required variables:
+
+```env
+# Server
+HOST=0.0.0.0
+PORT=1337
+APP_KEYS=<generated>
+API_TOKEN_SALT=<generated>
+ADMIN_JWT_SECRET=<generated>
+TRANSFER_TOKEN_SALT=<generated>
+JWT_SECRET=<generated>
+
+# Database (defaults to SQLite if not set)
+DATABASE_CLIENT=sqlite        # or: postgres | mysql
+DATABASE_HOST=
+DATABASE_PORT=
+DATABASE_NAME=
+DATABASE_USERNAME=
+DATABASE_PASSWORD=
+
+# Email (Nodemailer / SMTP)
+SMTP_HOST=
+SMTP_PORT=
+SMTP_USER=
+SMTP_PASS=
+EMAIL_FROM=
+
+# Frontend origin allowed by CORS
+FRONTEND_URL=http://localhost:5173
+```
+
+---
+
+## Project Structure
+
+```
+src/
+├── admin/          # Admin dashboard customization (MUST branding)
+├── api/            # Content type controllers, routes, services
+├── extensions/     # Plugin extensions (users-permissions, tree-menus)
+└── plugins/
+    └── chat-inbox/ # Custom chat inbox admin plugin
+config/
+├── database.ts     # Database config (SQLite / Postgres / MySQL)
+├── middlewares.ts  # CORS, security, etc.
+└── plugins.ts      # Plugin registration and config
+public/
+└── must_logo.png   # MUST university logo used in admin panel
+```
+
+---
+
+## Admin Dashboard
+
+The admin panel is customized to match MUST brand identity:
+
+- **Logo:** MUST university logo
+- **Colors:** Navy `#0D1B3E`, Green `#1B8A3D`, Gold `#C5A55A`
+- **Font:** Poppins
+- **Title:** "International Student Platform — Admin Dashboard"
+
+Access at `http://localhost:1337/admin` after running `npm run develop`.
