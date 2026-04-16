@@ -16,45 +16,40 @@ const CSS = `
     background-color: #F4F6F9 !important;
   }
 
-  /* Sidebar */
-  nav, aside {
+  /* Sidebar — left nav only (nav element, NOT aside which is the Document Actions panel) */
+  nav {
     background-color: #0D1B3E !important;
     border-right: 1px solid rgba(255,255,255,0.08) !important;
   }
-  nav a, nav button, nav li, nav li > *,
-  aside a, aside button, aside li, aside li > * {
+  nav a, nav button, nav li, nav li > * {
     background-color: transparent !important;
   }
-  /* Active item overrides transparent rule */
-  nav svg, nav svg path, aside svg, aside svg path {
+  nav svg, nav svg path {
     fill: rgba(255,255,255,0.80) !important;
     color: rgba(255,255,255,0.80) !important;
   }
-  nav span, nav p, nav a, aside span, aside p, aside a {
+  nav span, nav p, nav a {
     color: rgba(255,255,255,0.85) !important;
   }
-  nav h1, nav h2, nav h3, nav h4, aside h1, aside h2, aside h3, aside h4 {
+  nav h1, nav h2, nav h3, nav h4 {
     color: #ffffff !important; font-weight: 600 !important;
   }
-  nav a[aria-current="page"], nav a[aria-current="true"], aside a[aria-current="page"] {
+  nav a[aria-current="page"], nav a[aria-current="true"] {
     background-color: #1B8A3D !important;
     border-radius: 6px !important;
     border-left: 3px solid #C5A55A !important;
   }
   nav a[aria-current="page"] span, nav a[aria-current="page"] svg path,
-  nav a[aria-current="true"] span, aside a[aria-current="page"] span {
+  nav a[aria-current="true"] span {
     color: #ffffff !important; fill: #ffffff !important;
   }
   /* Strapi v5: active state sets color on inner div via .active class */
-  nav a.active > div, aside a.active > div,
-  nav a[aria-current] > div, aside a[aria-current] > div {
+  nav a.active > div, nav a[aria-current] > div {
     color: #ffffff !important;
     background-color: transparent !important;
   }
-  /* ID selector beats styled-component class selectors on hover */
-  #root nav a:hover, #root nav button:hover,
-  #root aside a:hover, #root aside button:hover,
-  #root aside li:hover > a, #root aside li:hover > span {
+  /* Hover */
+  #root nav a:hover, #root nav button:hover {
     background-color: rgba(27, 138, 61, 0.30) !important;
     border-radius: 6px !important;
     color: #ffffff !important;
@@ -213,20 +208,18 @@ export default {
       requestAnimationFrame(() => requestAnimationFrame(applyPage));
     }).observe(document.body, { childList: true, subtree: false });
 
-    // ── Fix all sidebar white boxes + hover via JS inline styles ─────────────
+    // ── Fix nav white boxes + hover via JS inline styles ─────────────────────
     // Inline setProperty('...', 'important') is the absolute highest CSS priority.
-    // Nothing styled-components injects can override it.
+    // Only targets nav — aside is the Document Actions panel (Publish/Save), not the sidebar.
 
     const GREEN_ACTIVE = '#1B8A3D';
     const GREEN_HOVER  = 'rgba(27,138,61,0.35)';
 
     const fixSidebar = () => {
-      document.querySelectorAll('nav *, aside *').forEach((el) => {
+      document.querySelectorAll('nav *').forEach((el) => {
         const tag = el.tagName;
-        // Skip form controls — they need their own backgrounds
         if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
         const htmlEl = el as HTMLElement;
-        // Skip already-active items (they'll be styled below)
         if (htmlEl.getAttribute('aria-current')) return;
         if ((htmlEl as Element).matches(':hover')) return;
         htmlEl.style.setProperty('background-color', 'transparent', 'important');
@@ -238,13 +231,12 @@ export default {
       });
 
       // Re-apply active item green
-      document.querySelectorAll('nav a[aria-current], aside a[aria-current], nav a.active, aside a.active').forEach((el) => {
+      document.querySelectorAll('nav a[aria-current], nav a.active').forEach((el) => {
         const htmlEl = el as HTMLElement;
         htmlEl.style.setProperty('background-color', GREEN_ACTIVE, 'important');
         htmlEl.style.setProperty('border-radius', '6px', 'important');
         htmlEl.style.setProperty('border-left', '3px solid #C5A55A', 'important');
         htmlEl.style.setProperty('color', '#ffffff', 'important');
-        // Target the inner div wrapper — Strapi's styled-component sets color on div, not the <a>
         el.querySelectorAll('div, span, p').forEach(child => {
           (child as HTMLElement).style.setProperty('color', '#ffffff', 'important');
           (child as HTMLElement).style.setProperty('background-color', 'transparent', 'important');
@@ -264,7 +256,7 @@ export default {
 
     // Hover
     document.addEventListener('mouseover', (e) => {
-      const el = (e.target as Element).closest?.('nav a, nav button, aside a, aside button');
+      const el = (e.target as Element).closest?.('nav a, nav button');
       if (!el || el.getAttribute('aria-current')) return;
       (el as HTMLElement).style.setProperty('background-color', GREEN_HOVER, 'important');
       (el as HTMLElement).style.setProperty('border-radius', '6px', 'important');
@@ -275,7 +267,7 @@ export default {
     });
 
     document.addEventListener('mouseout', (e) => {
-      const el = (e.target as Element).closest?.('nav a, nav button, aside a, aside button');
+      const el = (e.target as Element).closest?.('nav a, nav button');
       if (!el || el.getAttribute('aria-current')) return;
       (el as HTMLElement).style.setProperty('background-color', 'transparent', 'important');
       (el as HTMLElement).style.setProperty('color', 'rgba(255,255,255,0.85)', 'important');
